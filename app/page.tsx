@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -15,9 +16,9 @@ export default function Home() {
     </div>
 
     {/* Right Button */}
-    <button className="px-5 py-2 bg-white text-black rounded-full text-sm font-medium hover:bg-gray-200 transition">
-      Get Started
-    </button>
+    <Link href="/signUp" className="px-5 py-2 bg-white text-black rounded-full text-sm font-medium hover:bg-gray-200 transition">
+  Get Started
+</Link>
   </div>
 </nav>
 
@@ -50,9 +51,12 @@ export default function Home() {
           <button className="px-6 py-3 border border-purple-500 text-purple-400 rounded-full hover:bg-purple-600/20 transition text-sm md:text-base">
             Sign in
           </button>
-          <button className="px-6 py-3 bg-purple-600 rounded-full hover:bg-purple-700 transition text-sm md:text-base">
-            Get Started
-          </button>
+          <Link
+    href="/signUp"
+    className="px-6 py-3 bg-purple-600 rounded-full hover:bg-purple-700 transition text-sm md:text-base"
+  >
+    Get Started
+  </Link>
         </div>
       </section>
       {/* Features Section */}
@@ -163,9 +167,12 @@ export default function Home() {
     <p className="text-xl md:text-2xl font-light text-white mb-8">
       Get Started in a journey
     </p>
-    <button className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-100 transition font-medium">
-      Create an Account
-    </button>
+    <Link
+  href="/signUp"
+  className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-100 transition font-medium inline-block"
+>
+  Create an Account
+</Link>
   </div>
 </section>
 
