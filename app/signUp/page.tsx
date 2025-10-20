@@ -1,8 +1,13 @@
+// app/signUp/page.tsx
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { Eye, EyeOff } from "lucide-react";
+
 
 export default function SignUpPage() {
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -22,9 +27,8 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen bg-black text-white flex">
-      {/* Left Side - Back to 50% width */}
+      {/* Left Side */}
       <div className="hidden lg:block lg:w-1/2 relative bg-black">
-        {/* Centered image container */}
         <div className="absolute inset-0 flex items-center justify-center p-8">
           <img
             src="/signUp-image.png"
@@ -32,8 +36,6 @@ export default function SignUpPage() {
             className="max-w-[85%] max-h-[83vh] object-contain"
           />
         </div>
-
-        {/* Logo (on top of image) */}
         <div className="absolute top-8 left-8 flex items-center gap-2 z-10">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center">
             <span className="text-white font-bold">✦</span>
@@ -42,25 +44,21 @@ export default function SignUpPage() {
         </div>
       </div>
 
-      {/* Right Side - Form with Purple Gradient & Stars */}
+      {/* Right Side */}
       <div className="flex-1 flex flex-col justify-center p-8 lg:p-16 relative">
-          <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-700/30"></div>
-        {/* Purple Gradient Overlay - Radial from right side */}
+        <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-700/30"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-purple-900/50"></div>
 
-        {/* Floating Stars */}
         <div className="absolute top-10 right-10 text-white opacity-70">✦</div>
         <div className="absolute top-1/3 right-10 text-white opacity-50">✦</div>
         <div className="absolute bottom-10 right-10 text-white opacity-60">✦</div>
 
-        {/* Form Container - Removed 'mx-auto' to align left */}
         <div className="max-w-md w-full z-10">
           <h1 className="text-3xl md:text-4xl font-normal mb-8">
             Set up your <span className="text-purple-400">Account</span>
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name Field */}
             <div>
               <label className="block text-sm font-medium mb-1">Name</label>
               <input
@@ -74,7 +72,6 @@ export default function SignUpPage() {
               />
             </div>
 
-            {/* Email Field */}
             <div>
               <label className="block text-sm font-medium mb-1">Email</label>
               <input
@@ -87,23 +84,28 @@ export default function SignUpPage() {
                 required
               />
             </div>
-
-            {/* Password Field */}
             <div>
-              <label className="block text-sm font-medium mb-1">Password</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Password"
-                className="w-full px-4 py-3 bg-white text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                required
-              />
-            </div>
+                <label className="block text-sm mb-1">Password</label>
+            <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 rounded-md bg-white text-black border border-gray-700 placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-2.5 text-gray-400 hover:text-white"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
 
-            {/* Confirm Password Field */}
-            <div>
+            <div><br></br>
               <label className="block text-sm font-medium mb-1">Confirm Password</label>
               <input
                 type="password"
@@ -115,8 +117,8 @@ export default function SignUpPage() {
                 required
               />
             </div>
+            </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors"
@@ -125,32 +127,29 @@ export default function SignUpPage() {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="my-6 flex items-center">
             <div className="flex-1 border-t border-gray-700"></div>
             <span className="px-4 text-sm text-gray-400">Or Continue With</span>
             <div className="flex-1 border-t border-gray-700"></div>
           </div>
 
-          {/* Google Button */}
           <button
             type="button"
             className="w-full py-3 bg-white text-black rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
           >
             <img
-                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt="Google"
-                className="w-5 h-5"
-              />
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="Google"
+              className="w-5 h-5"
+            />
             <span>Continue with Google</span>
           </button>
 
-          {/* Login Link */}
           <p className="mt-6 text-center text-sm text-gray-400">
             Already Have an Account?{' '}
-            <a href="/signin" className="text-purple-400 hover:underline">
+            <Link href="/login" className="text-purple-400 hover:underline">
               Login
-            </a>
+            </Link>
           </p>
         </div>
       </div>
