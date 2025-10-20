@@ -1,18 +1,13 @@
 'use client';
 
-import { FC, useState } from "react";
+import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const Login: FC = (): JSX.Element => {
+export default function LoginPage() {
+  const [formData, setFormData] = useState({ email: '', password: '', remember: false });
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    remember: false,
-  });
-
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,12 +18,29 @@ const Login: FC = (): JSX.Element => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login data:", formData);
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message); // "Login successful!"
+        console.log("Logged in user:", data.user);
+      } else {
+        alert(data.error);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.message || "Something went wrong during login!");
+    }
   };
   
-
   return (
     <main className="min-h-screen flex flex-col bg-black text-white relative overflow-hidden">
       {/* Top bar */}
@@ -72,7 +84,7 @@ const Login: FC = (): JSX.Element => {
               <input
                 type="email"
                 name="email"
-                placeholder="username@gmail.com"
+                placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded-md bg-white text-black border border-gray-700 placeholder-gray-500 focus:outline-none focus:border-purple-500"
@@ -179,6 +191,4 @@ const Login: FC = (): JSX.Element => {
       </section>
     </main>
   );
-};
-
-export default Login;
+}
