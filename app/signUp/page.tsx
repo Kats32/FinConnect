@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Eye, EyeOff } from "lucide-react";
-
+import { useRouter } from 'next/navigation'; 
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,12 +15,14 @@ export default function SignUpPage() {
     confirmPassword: '',
   });
 
+  const router = useRouter();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
@@ -39,6 +41,8 @@ export default function SignUpPage() {
       if (res.ok) {
         alert(data.message);
         setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+
+        router.push('/login'); // ✅ Redirect to login page
       } else {
         alert(data.error);
       }
@@ -107,39 +111,40 @@ export default function SignUpPage() {
                 required
               />
             </div>
-            <div>
-                <label className="block text-sm mb-1">Password</label>
-            <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 rounded-md bg-white text-black border border-gray-700 placeholder-gray-500 focus:outline-none focus:border-purple-500"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-2.5 text-gray-400 hover:text-white"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
 
-            <div><br></br>
-              <label className="block text-sm font-medium mb-1">Confirm Password</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirm password"
-                className="w-full px-4 py-3 bg-white text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                required
-              />
-            </div>
+            <div>
+              <label className="block text-sm mb-1">Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 rounded-md bg-white text-black border border-gray-700 placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-2.5 text-gray-400 hover:text-white"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+
+              <div><br />
+                <label className="block text-sm font-medium mb-1">Confirm Password</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm password"
+                  className="w-full px-4 py-3 bg-white text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  required
+                />
+              </div>
             </div>
 
             <button

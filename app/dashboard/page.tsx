@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { LineChart, Settings, Home, MessageSquare, LogOut, Search, Bell, User } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
+  const router = useRouter();
   const [chatMessages, setChatMessages] = useState([
     { sender: "bot", text: "Hello there! How may I assist you today?" },
   ]);
@@ -73,7 +75,10 @@ export default function Dashboard() {
                 <polyline points="18 15 12 9 6 15"/>
               </svg>
             </div>
-            <button className="w-full mt-4 bg-purple-600 hover:bg-purple-700 py-2 rounded-lg font-medium">
+            <button 
+              className="w-full mt-4 bg-purple-600 hover:bg-purple-700 py-2 rounded-lg font-medium"
+              onClick={() => router.push("/trading-simulator")}
+            >
               Start Trading
             </button>
           </motion.div>
@@ -118,10 +123,10 @@ export default function Dashboard() {
   </div>
   <div className="space-y-3">
     {[
-      { name: "Apple", price: 178.42, change: 2.34, logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"},
-      { name: "Google", price: 412.18, change: 1.89, logo: "https://www.svgrepo.com/show/475656/google-color.svg" },
+      { name: "Apple", price: 178.42, change: 2.34, logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg  "},
+      { name: "Google", price: 412.18, change: 1.89, logo: "https://www.svgrepo.com/show/475656/google-color.svg  " },
       { name: "Playstation", price: 142.65, change: -0.87, logo: "\playstation logo.jpg" },
-      { name: "Megogo", price: 178.35, change: 3.21, logo: "https://store-images.s-microsoft.com/image/apps.22084.13544732291946572.2b731575-b5d5-4ecf-b82a-ab4647440d8f.83e41618-3d8a-4819-bee0-88081e1224c7" },
+      { name: "Megogo", price: 178.35, change: 3.21, logo: "https://store-images.s-microsoft.com/image/apps.22084.13544732291946572.2b731575-b5d5-4ecf-b82a-ab4647440d8f.83e41618-3d8a-4819-bee0-88081e1224c7  " },
     ].map((c, i) => (
       <div key={i} className="flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -180,7 +185,7 @@ export default function Dashboard() {
               </div>
               <div className="bg-zinc-800 rounded-xl p-3">
                 <img
-                  src="https://images.squarespace-cdn.com/content/v1/5fc5993f085bf90c0e1d1649/c2677011-860b-408a-a26a-d88b99a312cb/IMG_9232.jpeg"
+                  src="  https://images.squarespace-cdn.com/content/v1/5fc5993f085bf90c0e1d1649/c2677011-860b-408a-a26a-d88b99a312cb/IMG_9232.jpeg  "
                   alt="Steve Jobs"
                   className="rounded-lg mb-2 h-50 w-full object-cover"
                 />
