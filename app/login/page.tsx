@@ -8,6 +8,15 @@ import Link from "next/link";
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '', remember: false });
   const [showPassword, setShowPassword] = useState(false);
+<<<<<<< Updated upstream
+=======
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    remember: false,
+  });
+
+>>>>>>> Stashed changes
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -191,4 +200,10 @@ export default function LoginPage() {
       </section>
     </main>
   );
+<<<<<<< Updated upstream
 }
+=======
+};
+
+export default Login;
+>>>>>>> Stashed changes
