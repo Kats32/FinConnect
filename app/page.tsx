@@ -1,6 +1,14 @@
+"use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleGoToLogin = () => {
+    router.push('/login');
+  };
+
   return (
     <main className="bg-black text-white min-h-screen font-sans">
      {/* Navbar */}
@@ -47,7 +55,10 @@ export default function Home() {
 
         {/* Buttons */}
         <div className="flex gap-4">
-          <button className="px-6 py-3 border border-purple-500 text-purple-400 rounded-full hover:bg-purple-600/20 transition text-sm md:text-base">
+          <button
+            onClick={handleGoToLogin}
+            className="px-6 py-3 border border-purple-500 text-purple-400 rounded-full hover:bg-purple-600/20 transition text-sm md:text-base"
+          >
             Sign in
           </button>
           <button className="px-6 py-3 bg-purple-600 rounded-full hover:bg-purple-700 transition text-sm md:text-base">
