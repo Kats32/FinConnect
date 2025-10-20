@@ -2,6 +2,8 @@
 
 import { FC, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Login: FC = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,6 +13,7 @@ const Login: FC = (): JSX.Element => {
     remember: false,
   });
 
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -40,9 +43,12 @@ const Login: FC = (): JSX.Element => {
     </div>
 
     {/* Right Button */}
-    <button className="px-5 py-2 bg-white text-black rounded-full text-sm font-medium hover:bg-gray-200 transition">
-      Get Started
-    </button>
+    <button
+            onClick={() => router.push("/signUp")}
+            className="px-5 py-2 bg-white text-black rounded-full text-sm font-medium hover:bg-gray-200 transition"
+          >
+            Get Started
+          </button>
   </div>
 </nav>
 <section className="relative h-[90vh] flex flex-col items-center justify-center text-center px-6 overflow-hidden">
@@ -155,9 +161,9 @@ const Login: FC = (): JSX.Element => {
           </form>
           <p className="text-gray-400 text-sm mt-4 text-center">
             Don’t have an account yet?{" "}
-            <a href="/signup" className="text-purple-400 hover:underline">
-              Register
-            </a>
+            <Link href="/signUp" className="text-purple-400 hover:underline">
+                Register
+              </Link>
           </p>
         </div>
     
