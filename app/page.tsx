@@ -3,6 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleGoToLogin = () => {
+    router.push('/login');
+  };
+
   return (
     <main className="bg-black text-white min-h-screen font-sans">
       {/* Navbar */}
