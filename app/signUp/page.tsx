@@ -136,6 +136,25 @@ export default function SignUpPage() {
           <button
             type="button"
             className="w-full py-3 bg-white text-black rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
+            onClick={() => {
+              // generate a random state to mitigate CSRF attacks
+              const state = Math.random().toString(36).substring(2);
+              sessionStorage.setItem("google_oauth_state", state);
+
+              // build Google OAuth URL
+              const params = new URLSearchParams({
+                client_id: "319945677677-njn88jhvv4bsrgp7acau5tlnccl1h7e9.apps.googleusercontent.com", // safe to expose
+                redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI!,
+                response_type: "code",
+                scope: "openid email profile",
+                access_type: "offline",
+                prompt: "select_account",
+                state,
+              });
+
+              // redirect to Google OAuth
+              window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+            }}
           >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"

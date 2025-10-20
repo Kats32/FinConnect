@@ -1,14 +1,10 @@
 // app/page.tsx
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
-  const router = useRouter();
-
-  const handleGoToLogin = () => {
-    router.push('/login');
-  };
-
   return (
     <main className="bg-black text-white min-h-screen font-sans">
       {/* Navbar */}
@@ -42,19 +38,20 @@ export default function Home() {
 
         <h1 className="text-3xl md:text-4xl font-normal mb-2 tracking-tight">FinConnect</h1>
         <h2 className="text-4xl md:text-6xl font-normal mb-4 leading-tight max-w-2xl mx-auto">
-          Master Your<br />
+          Master Your
+          <br />
           Financial Future
         </h2>
         <p className="text-gray-400 max-w-lg mb-8 text-sm md:text-base">
-          Master your financial future with Finconnect's AI-powered advisory, comprehensive market analysis, and risk-free trading simulations. Join millions of successful investors.
+          Secure your finances and grow with confidence.
         </p>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 justify-center">
           <Link
             href="/login"
-            className="px-6 py-3 border border-purple-500 text-purple-400 rounded-full hover:bg-purple-600/20 transition text-sm md:text-base"
+            className="px-6 py-3 bg-gray-800 rounded-full hover:bg-gray-700 transition text-sm md:text-base"
           >
-            Sign in
+            Sign In
           </Link>
           <Link
             href="/signUp"
