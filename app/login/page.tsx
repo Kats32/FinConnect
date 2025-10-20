@@ -126,13 +126,31 @@ const Login: FC = (): JSX.Element => {
             <button
               type="button"
               className="flex justify-center items-center gap-2 py-2 bg-white text-black rounded-md hover:bg-gray-200 transition"
+              onClick={() => {
+              // generate a random state to mitigate CSRF attacks and store it to verify after redirect
+              const state = Math.random().toString(36).substring(2);
+              sessionStorage.setItem('google_oauth_state', state);
+
+              const params = new URLSearchParams({
+                client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "319945677677-njn88jhvv4bsrgp7acau5tlnccl1h7e9.apps.googleusercontent.com",
+                redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI || "http://localhost:3000/api/auth/google/callback",
+                response_type: "code",
+                scope: "openid email profile",
+                access_type: "offline",
+                prompt: "select_account",
+                state,
+              });
+
+              window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+              }}
+              aria-label="Sign in with Google"
             >
               <img
-                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                alt="Google"
-                className="w-5 h-5"
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="Google"
+              className="w-5 h-5"
               />
-              Google
+              Continue with Google
             </button>
           </form>
           <p className="text-gray-400 text-sm mt-4 text-center">
