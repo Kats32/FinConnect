@@ -18,6 +18,7 @@ interface Article {
   title: string;
   description: string;
   urlToImage?: string;
+  url?: string;
 }
 
 export default function Dashboard() {
@@ -26,7 +27,7 @@ export default function Dashboard() {
     { sender: "bot", text: "Hello there! How may I assist you today?" },
   ]);
   const [input, setInput] = useState("");
-  const [newsData, setNewsData] = useState<any[]>([]);
+  const [newsData, setNewsData] = useState<Article[]>([]);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -80,12 +81,23 @@ export default function Dashboard() {
       {/* Sidebar */}
       <aside className="w-20 bg-zinc-950 flex flex-col justify-between py-6 items-center border-r border-zinc-800">
         <div className="flex flex-col gap-6 items-center">
-          <Home className="text-zinc-400 hover:text-white" />
+          <Home
+            className="text-zinc-400 hover:text-white cursor-pointer"
+            onClick={() => router.push("/dashboard")}
+          />
           <LineChart className="text-zinc-400 hover:text-white" />
-          <MessageSquare className="text-zinc-400 hover:text-white" />
-          <Settings className="text-zinc-400 hover:text-white" />
+          <MessageSquare
+            className="text-zinc-400 hover:text-white cursor-pointer"
+            onClick={() => router.push("/news")}
+          />
+          <Settings
+            className="text-zinc-400 hover:text-white cursor-pointer"
+            onClick={() => router.push("/dashboard/settings")}
+          />
         </div>
-        <LogOut className="text-zinc-400 hover:text-red-400 mb-2" />
+        <LogOut className="text-zinc-400 hover:text-red-400 mb-2" 
+        onClick={() => router.push("/")}
+/>
       </aside>
 
       {/* Main Content */}
@@ -101,7 +113,10 @@ export default function Dashboard() {
           <div className="flex items-center gap-4">
             <Search className="text-zinc-400 hover:text-white" />
             <Bell className="text-zinc-400 hover:text-white" />
-            <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center">
+            <div
+              className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center cursor-pointer hover:bg-zinc-600"
+              onClick={() => router.push("/dashboard/profile")}
+            >
               <User className="w-4 h-4 text-white" />
             </div>
           </div>
@@ -279,7 +294,10 @@ export default function Dashboard() {
           >
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-lg font-medium">Live Stock & Business News</h2>
-              <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center">
+              <div
+                className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center cursor-pointer hover:bg-zinc-600"
+                onClick={() => router.push("/news")}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -310,6 +328,7 @@ export default function Dashboard() {
                         description:
                           "Stay tuned for real-time financial news and analysis.",
                         urlToImage: "https://via.placeholder.com/300x200",
+                        url: "#",
                       }));
                   } else {
                     while (repeated.length < minCards) {
@@ -319,9 +338,12 @@ export default function Dashboard() {
                   }
                   return [...repeated, ...repeated];
                 })()].map((article: any, i: number) => (
-                  <div
+                  <a
                     key={i}
-                    className="flex-shrink-0 w-72 bg-zinc-800 rounded-xl p-3 mx-2"
+                    href={article.url || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-shrink-0 w-72 bg-zinc-800 rounded-xl p-3 mx-2 hover:bg-zinc-700 transition-colors duration-200"
                   >
                     <img
                       src={
@@ -337,7 +359,7 @@ export default function Dashboard() {
                     <p className="text-xs text-gray-400 line-clamp-3">
                       {article.description}
                     </p>
-                  </div>
+                  </a>
                 ))}
               </div>
             </div>
