@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LineChart, Settings, Home, MessageSquare, LogOut, Search, Bell, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+
+interface Article {
+  title: string;
+  description: string;
+  urlToImage?: string;
+}
 
 export default function Dashboard() {
   const router = useRouter();
@@ -11,6 +17,21 @@ export default function Dashboard() {
     { sender: "bot", text: "Hello there! How may I assist you today?" },
   ]);
   const [input, setInput] = useState("");
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const res = await fetch("/api/news");
+        const data = await res.json();
+        console.log("Fetched news:", data.articles);
+        setNewsData(data.articles || []);
+      } catch (err) {
+        console.error("Error fetching news:", err);
+      }
+    };
+    fetchNews();
+  }, []);
+  const [newsData, setNewsData] = useState<any[]>([]);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -160,44 +181,38 @@ export default function Dashboard() {
         {/* Bottom Section */}
         <div className="grid grid-cols-3 gap-6">
           {/* News */}
-          <div className="col-span-2 bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-2xl">
+          {/* News (Live Carousel) */}
+          <motion.div
+            whileHover={{ scale: 1.01 }}
+            className="col-span-2 bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-2xl overflow-hidden"
+          >
             <div className="flex justify-between items-start mb-4">
-              <h2 className="text-lg font-medium">News</h2>
+              <h2 className="text-lg font-medium">Live Stock & Business News</h2>
               <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 18l6-6-6-6"/>
+                  <path d="M9 18l6-6-6-6" />
                 </svg>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-zinc-800 rounded-xl p-3">
-                <img
-                  src="https://media.istockphoto.com/id/1029369210/photo/tornado-sea.jpg?s=612x612&w=0&k=20&c=CT18Qo9ryxcS-bfg94bczsM61Me9H-hPRRdx1slQrZc="
-                  alt="Storm Hanna"
-                  className="rounded-lg mb-2 h-50 w-full object-cover"
-                />
-                <h3 className="font-semibold text-sm mb-1">
-                  Tornado and tide warnings as Storm Hanna lashes Texas
-                </h3>
-                <p className="text-xs text-gray-400 line-clamp-3">
-                  Storm Hanna causes severe weather across Texas with warnings in coastal areas.
-                </p>
-              </div>
-              <div className="bg-zinc-800 rounded-xl p-3">
-                <img
-                  src="  https://images.squarespace-cdn.com/content/v1/5fc5993f085bf90c0e1d1649/c2677011-860b-408a-a26a-d88b99a312cb/IMG_9232.jpeg  "
-                  alt="Steve Jobs"
-                  className="rounded-lg mb-2 h-50 w-full object-cover"
-                />
-                <h3 className="font-semibold text-sm mb-1">
-                  20 Years Ago, Steve Jobs Built the Coolest Computer Ever
-                </h3>
-                <p className="text-xs text-gray-400 line-clamp-3">
-                  A look back at Apple’s iconic Power Mac G4 Cube.
-                </p>
-              </div>
+
+            {/* Scrolling carousel */}
+            <div className="relative w-full overflow-x-auto whitespace-nowrap scrollbar-hide animate-scroll">
+              {newsData.map((article: any, i: number) => (
+                <div
+                  key={i}
+                  className="inline-block w-72 mx-2 bg-zinc-800 rounded-xl p-3 align-top"
+                >
+                  <img
+                    src={article.urlToImage || "https://via.placeholder.com/300x200"}
+                    alt={article.title}
+                    className="rounded-lg mb-2 h-32 w-full object-cover"
+                  />
+                  <h3 className="font-semibold text-sm mb-1 line-clamp-2">{article.title}</h3>
+                  <p className="text-xs text-gray-400 line-clamp-3">{article.description}</p>
+                </div>
+              ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Chatbot */}
           <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-2xl flex flex-col justify-between">
