@@ -8,6 +8,7 @@ import Link from "next/link";
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '', remember: false });
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,6 +21,8 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    
     try {
       const res = await fetch("/api/login", {
         method: "POST",
@@ -30,9 +33,11 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message); // "Login successful!"
-        console.log("Logged in user:", data.user);
-
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(data.user));
+        console.log("User data stored:", data.user);
+        
+        alert(data.message);
         router.push("/dashboard"); 
       } else {
         alert(data.error);
@@ -40,8 +45,11 @@ export default function LoginPage() {
     } catch (err: any) {
       console.error(err);
       alert(err?.message || "Something went wrong during login!");
+    } finally {
+      setIsLoading(false);
     }
   };
+  
   
   return (
     <main className="min-h-screen flex flex-col bg-black text-white relative overflow-hidden">
@@ -117,9 +125,9 @@ export default function LoginPage() {
                   </button>
                 </div>
                 <div className="text-right mt-1">
-                  <a href="#" className="text-sm text-purple-400 hover:underline">
+                  <Link href="/login/forgot-password" className="text-sm text-purple-400 hover:underline">
                     Forgot Password?
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -135,24 +143,24 @@ export default function LoginPage() {
               </div>
 
               <button
-                type="submit"
-                className="mt-4 w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-md transition font-medium"
-              >
-                Sign In
-              </button>
+          type="submit"
+          disabled={isLoading}
+          className="mt-4 w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-md transition font-medium disabled:opacity-50"
+        >
+          {isLoading ? "Signing In..." : "Sign In"}
+        </button>
 
-              <div className="text-center text-gray-400 text-sm mt-2">
-                Or Continue With
-              </div>
+            <div className="text-center text-gray-400 text-sm mt-2">
+              Or Continue With
+            </div>
 
-              <button
-                type="button"
-                className="flex justify-center items-center gap-2 py-2 bg-white text-black rounded-md hover:bg-gray-200 transition"
-                onClick={() => {
-                  // generate a random state to mitigate CSRF attacks and store it to verify after redirect
-                  const state = Math.random().toString(36).substring(2);
-                  sessionStorage.setItem('google_oauth_state', state);
-
+            <div className="flex gap-3">
+                <button
+                    type="button"
+                    className="flex-1 flex justify-center items-center gap-2 py-2 bg-white text-black rounded-md hover:bg-gray-200 transition"
+                    onClick={() => {
+                      const state = Math.random().toString(36).substring(2);
+                      sessionStorage.setItem('google_oauth_state', state);
                   const params = new URLSearchParams({
                     client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "319945677677-njn88jhvv4bsrgp7acau5tlnccl1h7e9.apps.googleusercontent.com",
                     redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI || "http://localhost:3000/api/auth/google/callback",
@@ -167,17 +175,21 @@ export default function LoginPage() {
                 }}
                 aria-label="Sign in with Google"
               >
-                <img
-                  src="https://www.svgrepo.com/show/475656/google-color.svg"
-                  alt="Google"
-                  className="w-5 h-5"
-                />
-                Continue with Google
-              </button>
+                    <img
+      src="https://www.svgrepo.com/show/475656/google-color.svg"
+      alt="Google"
+      className="w-5 h-5"
+    />
+    Google
+  </button>
+
+  {/* REMOVED FACE LOGIN BUTTON */}
+</div>
+
             </form>
 
             <p className="text-gray-400 text-sm mt-4 text-center">
-              Don’t have an account yet?{" "}
+              Don't have an account yet?{" "}
               <Link href="/signUp" className="text-purple-400 hover:underline">
                 Register
               </Link>
