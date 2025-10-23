@@ -203,7 +203,8 @@ export default function Dashboard() {
             className="text-zinc-400 hover:text-white cursor-pointer"
             onClick={() => router.push("/dashboard")}
           />
-          <LineChart className="text-zinc-400 hover:text-white" />
+          <LineChart className="text-zinc-400 hover:text-white"
+           onClick={() => router.push("/companies")} />
           <MessageSquare
             className="text-zinc-400 hover:text-white cursor-pointer"
             onClick={() => router.push("/news")}
