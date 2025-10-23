@@ -293,7 +293,7 @@ export default function Dashboard() {
             className="col-span-2 bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-2xl overflow-hidden"
           >
             <div className="flex justify-between items-start mb-4">
-              <h2 className="text-lg font-medium">Live Stock & Business News</h2>
+              <h2 className="text-lg font-medium">Live Stock Market & Business News</h2>
               <div
                 className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center cursor-pointer hover:bg-zinc-600"
                 onClick={() => router.push("/news")}
