@@ -1,4 +1,4 @@
-// hooks/useLocalStorage.ts (FIXED)
+// hooks/useLocalStorage.ts
 "use client";
 
 import { useEffect, useState } from "react";
