@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Article {
   title: string;
@@ -29,6 +31,69 @@ export default function Dashboard() {
   const [input, setInput] = useState("");
   const [newsData, setNewsData] = useState<Article[]>([]);
 
+  const [isTyping, setIsTyping] = useState(false);
+
+  // Helper to read cookies
+  const getCookie = (name: string) => {
+    const match = document.cookie.match(new RegExp('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
+  };
+
+  // Call clear_conversation when the page is reloaded/unloaded (use sendBeacon for reliability)
+  useEffect(() => {
+    const url = "http://127.0.0.1:8000/clear_conversation";
+
+    const sendClear = async () => {
+      try {
+        const user_id = getCookie("user_id") || "000";
+        await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id }),
+        });
+      } catch (err) {
+        console.error("Error calling clear_conversation on mount:", err);
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      const user_id = getCookie("user_id") || "000";
+      const payload = JSON.stringify({ user_id });
+
+      if (navigator && "sendBeacon" in navigator) {
+        const blob = new Blob([payload], { type: "application/json" });
+        try {
+          navigator.sendBeacon(url, blob);
+        } catch (err) {
+          // fall through to sync XHR fallback if sendBeacon fails
+          try {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", url, false);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(payload);
+          } catch (e) {
+            console.error("Failed to send clear_conversation on unload:", e);
+          }
+        }
+      } else {
+        // synchronous XHR fallback for older browsers
+        try {
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", url, false);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.send(payload);
+        } catch (e) {
+          console.error("Failed to send clear_conversation on unload:", e);
+        }
+      }
+    };
+
+    // Call once on mount (in case of a fresh load that should clear prior conversation)
+    sendClear();
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
   useEffect(() => {
     const fetchNews = async () => {
       try {
@@ -46,6 +111,59 @@ export default function Dashboard() {
   const handleSend = () => {
     if (!input.trim()) return;
     setChatMessages([...chatMessages, { sender: "user", text: input }]);
+    setIsTyping(true);
+
+
+    (async () => {
+      const getCookie = (name: string) => {
+        const match = document.cookie.match(new RegExp('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)'));
+        return match ? decodeURIComponent(match[2]) : null;
+      };
+
+      const user_id = getCookie("user_id") || "000";
+      const username = getCookie("user_name") || getCookie("user") || "Anonymous";
+
+      const payload = {
+        user_id,
+        message: input,
+        user_profile: {
+          username,
+          preferences: {
+            language: "en",
+            timezone: "UTC",
+          },
+        },
+      };
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          throw new Error(`Server responded with ${res.status}`);
+        }
+
+        const data = await res.json();
+        console.log("Chatbot response data:", data);
+        const botText =
+          (data && (data.response || data.reply || data.bot)) ||
+          "Received no reply from server.";
+
+        setChatMessages((prev) => [...prev, { sender: "bot", text: botText }]);
+      } catch (err) {
+        console.error("Chat request error:", err);
+        setChatMessages((prev) => [
+          ...prev,
+          { sender: "bot", text: "Failed to reach chat server." },
+        ]);
+      } finally {
+      setIsTyping(false);
+      }
+    })();
+
     setInput("");
   };
 
@@ -284,13 +402,12 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-
         {/* Bottom Section */}
         <div className="grid grid-cols-3 gap-6">
           {/* News */}
           <motion.div
             whileHover={{ scale: 1.01 }}
-            className="col-span-2 bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-2xl overflow-hidden"
+            className="col-span-2 bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-2xl overflow-hidden flex flex-col"
           >
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-lg font-medium">Live Stock & Business News</h2>
@@ -313,60 +430,48 @@ export default function Dashboard() {
                 </svg>
               </div>
             </div>
-
-            {/* Auto-scrolling news carousel */}
-            <div className="relative w-full overflow-x-hidden whitespace-nowrap scrollbar-hide">
-              <div className="animate-scroll">
-                {[...(() => {
-                  let repeated: any[] = [];
-                  const minCards = 10;
-                  if (newsData.length === 0) {
-                    repeated = Array(6)
-                      .fill(null)
-                      .map(() => ({
-                        title: "Loading latest market updates...",
-                        description:
-                          "Stay tuned for real-time financial news and analysis.",
-                        urlToImage: "https://via.placeholder.com/300x200",
-                        url: "#",
-                      }));
-                  } else {
-                    while (repeated.length < minCards) {
-                      repeated = [...repeated, ...newsData];
-                    }
-                    repeated = repeated.slice(0, minCards);
-                  }
-                  return [...repeated, ...repeated];
-                })()].map((article: any, i: number) => (
-                  <a
-                    key={i}
-                    href={article.url || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-shrink-0 w-72 bg-zinc-800 rounded-xl p-3 mx-2 hover:bg-zinc-700 transition-colors duration-200"
-                  >
-                    <img
-                      src={
-                        article.urlToImage ||
-                        "https://via.placeholder.com/300x200"
-                      }
-                      alt={article.title}
-                      className="rounded-lg mb-2 h-32 w-full object-cover"
-                    />
-                    <h3 className="font-semibold text-sm mb-1 line-clamp-2">
-                      {article.title}
-                    </h3>
-                    <p className="text-xs text-gray-400 line-clamp-3">
-                      {article.description}
-                    </p>
-                  </a>
-                ))}
+            <div className="w-full overflow-x-auto scrollbar-hide">
+              <div className="flex gap-4">
+                {newsData.length > 0 ? (
+                  newsData.map((article, index) => (
+                    <div
+                      key={index}
+                      className="flex-shrink-0 bg-zinc-900 border border-zinc-700 rounded-xl p-4 w-[280px]"
+                    >
+                      {article.urlToImage && (
+                        <img
+                          src={article.urlToImage}
+                          alt={article.title}
+                          className="w-full h-32 object-cover rounded-md mb-3"
+                        />
+                      )}
+                      <h3 className="font-semibold text-white text-sm mb-1 truncate">
+                        {article.title}
+                      </h3>
+                      <p className="text-gray-400 text-xs line-clamp-3 mb-1">
+                        {article.description}
+                      </p>
+                      {article.url && (
+                        <a
+                          href={article.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-purple-400 text-xs hover:underline"
+                        >
+                          Read more →
+                        </a>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-sm">Loading news...</p>
+                )}
               </div>
-            </div>
+            </div>      
           </motion.div>
 
           {/* Chatbot */}
-          <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-2xl flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-2xl flex flex-col h-[375px]">
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-lg font-medium">Chatbot</h2>
               <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center">
@@ -385,7 +490,13 @@ export default function Dashboard() {
                 </svg>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto space-y-3">
+
+            {/* Chat messages scrollable area */}
+            <div
+              className="flex-1 overflow-y-auto space-y-3 scrollbar-hide pr-1"
+              role="log"
+              aria-live="polite"
+            >
               {chatMessages.map((msg, i) => (
                 <div
                   key={i}
@@ -393,18 +504,36 @@ export default function Dashboard() {
                     msg.sender === "user" ? "justify-end" : "justify-start"
                   }`}
                 >
-                  <p
-                    className={`px-3 py-2 rounded-xl max-w-[75%] ${
+                  <div
+                    className={`px-3 py-2 rounded-xl max-w-[75%] break-words ${
                       msg.sender === "user"
                         ? "bg-purple-600"
                         : "bg-zinc-800 text-gray-200"
                     }`}
                   >
-                    {msg.text}
-                  </p>
+                    <div className="prose prose-invert max-w-none text-sm">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {msg.text}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
                 </div>
               ))}
+               {/* ← Put the typing indicator here */}
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="px-3 py-2 rounded-xl bg-zinc-800 text-gray-200 max-w-[75%]">
+                      <div className="flex gap-1">
+                        <span className="dot animate-bounce">•</span>
+                        <span className="dot animate-bounce animation-delay-200">•</span>
+                        <span className="dot animate-bounce animation-delay-400">•</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
             </div>
+
+            {/* Input */}
             <div className="flex mt-3">
               <input
                 value={input}
