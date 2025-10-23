@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "../../../db/db";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,10 +25,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Update password
-    await pool.query(
-      "UPDATE users SET password = $1 WHERE email = $2",
-      [newPassword, email]
-    );
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await pool.query("UPDATE users SET password = $1 WHERE email = $2", [hashedPassword, email]);
 
     // Mark OTP as used
     await pool.query(

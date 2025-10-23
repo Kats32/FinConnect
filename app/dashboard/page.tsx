@@ -329,7 +329,11 @@ export default function Dashboard() {
           </motion.div>
 
           {/* Companies */}
-          <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-2xl shadow-md">
+          <motion.div
+            whileHover={{ scale: 1.01 }}
+            className="bg-gradient-to-br from-zinc-900 to-zinc-800 p-6 rounded-2xl shadow-md cursor-pointer"
+            onClick={() => router.push("/companies")}
+          >
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-lg font-medium">Companies</h2>
               <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center">
@@ -401,7 +405,7 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
         {/* Bottom Section */}
         <div className="grid grid-cols-3 gap-6">

@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     console.log("Google user:", user);
 
     // You can now store user in DB or session
-    const response = NextResponse.redirect(new URL("/", req.url));
+    const response = NextResponse.redirect(new URL("/dashboard", req.url));
   // For simplicity, set a cookie
     response.cookies.set("user_email", user.email, { httpOnly: false });
     response.cookies.set(

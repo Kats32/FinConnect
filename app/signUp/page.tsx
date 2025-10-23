@@ -327,18 +327,16 @@ export default function SignUpPage() {
                 className="w-full py-3 bg-white text-black rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
                 onClick={() => {
                   const state = Math.random().toString(36).substring(2);
-                  sessionStorage.setItem("google_oauth_state", state);
-
+                      sessionStorage.setItem('google_oauth_state', state);
                   const params = new URLSearchParams({
-                    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-                    redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI!,
+                    client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "319945677677-njn88jhvv4bsrgp7acau5tlnccl1h7e9.apps.googleusercontent.com",
+                    redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI || "http://localhost:3000/api/auth/google/callback",
                     response_type: "code",
                     scope: "openid email profile",
                     access_type: "offline",
                     prompt: "select_account",
                     state,
                   });
-
                   window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
                 }}
               >
