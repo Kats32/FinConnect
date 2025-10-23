@@ -160,19 +160,19 @@ export function TutorialOverlay({ isOpen, onClose, steps }: TutorialOverlayProps
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black bg-opacity-80"
+          className="absolute inset-0 bg-opacity-80"
           onClick={onClose}
         />
         
         {/* Highlight overlay */}
         {elementRect && (
-          <motion.div
+            <motion.div
             layout
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            className="absolute border-2 border-yellow-400 rounded-lg shadow-2xl pointer-events-none"
+            className="absolute border-2 rounded-lg shadow-2xl pointer-events-none"
             style={{
               top: elementRect.top - 4,
               left: elementRect.left - 4,
@@ -180,9 +180,9 @@ export function TutorialOverlay({ isOpen, onClose, steps }: TutorialOverlayProps
               height: elementRect.height + 8,
             }}
           >
-            <div className="absolute inset-0 bg-yellow-400 bg-opacity-10 rounded-lg" />
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full animate-ping" />
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full" />
+            <div className="absolute inset-0  bg-opacity-10 rounded-lg" />
+            <div className="absolute -top-2 -right-2 w-4 h-4  rounded-full animate-ping" />
+            <div className="absolute -top-2 -right-2 w-4 h-4  rounded-full" />
           </motion.div>
         )}
 
